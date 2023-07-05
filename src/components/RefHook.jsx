@@ -1,34 +1,67 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const RefHook = () => {
   const [randomInput, setRandomInput] = useState("");
+  const [seconds, setSeconds] = useState(0);
 
-  const [count, setCount] = useState(1);
+  const renders = useRef(0);
+  // const inputRef = useRef();
 
-  //   var date = new Date(2023, 6, 4, 12, 0, 50);
-  //   console.log(date);
+  const timerId = useRef();
 
-  const counter = setInterval(() => {
-    setCount(count + 1);
+  const handleChange = (e) => {
+    setRandomInput(e.target.value);
+    renders.current++;
+  };
 
-    return clearInterval(counter);
-  }, 1000);
+  // const focusInput = () => {
+  //   inputRef.current.focus();
+  // };
+
+  const startTimer = () => {
+    timerId.current = setInterval(() => {
+      renders.current++;
+      setSeconds((prev) => prev + 1);
+    }, 1000);
+  };
+
+  const stopTimer = () => {
+    clearInterval(timerId.current);
+    timerId.current = 0;
+  };
+
+  const resetTimer = () => {
+    stopTimer();
+    if (seconds) {
+      renders.current++;
+      setSeconds(0);
+    }
+  };
 
   return (
     <>
       <main>
         <input
+          // ref={inputRef}
           type="text"
           placeholder="randomInput"
           value={randomInput}
-          onChange={(e) => setRandomInput(e.target.value)}
+          onChange={handleChange}
         />
         <br />
         <br />
 
-        <p>{randomInput}</p>
+        <p>Renders : {renders.current}</p>
 
-        <p>{count}</p>
+        {/* <button onClick={focusInput}>Focus</button> */}
+
+        <button onClick={startTimer}>Start Timer</button>
+        <button onClick={stopTimer}>Stop Timer</button>
+        <button onClick={resetTimer}>Reset Timer</button>
+
+        <p>{seconds}</p>
+
+        <p>{randomInput}</p>
       </main>
     </>
   );
